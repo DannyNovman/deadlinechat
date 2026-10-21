@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DeadLine // Secure Booth</title>
-<!-- Mobil / PWA ikonok és beállítások -->
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="manifest" href="manifest.json">
@@ -12,14 +11,14 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<!-- Tailwind CSS CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
-<!-- FontAwesome Icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Orbitron:wght@500;800&display=swap" rel="stylesheet">
+
+<!-- MQTT client -->
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 
 <script>
 tailwind.config = {
@@ -57,26 +56,16 @@ tailwind.config = {
   background-size: 100% 3px, 6px 100%;
   pointer-events: none;
 }
-
 @keyframes flicker {
   0% { opacity: 0.97; }
   50% { opacity: 1; }
   100% { opacity: 0.98; }
 }
-.crt-flicker {
-  animation: flicker 0.15s infinite;
-}
+.crt-flicker { animation: flicker 0.15s infinite; }
 
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #080a0f;
-}
-::-webkit-scrollbar-thumb {
-  background: #00f3ff;
-  border-radius: 3px;
-}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #080a0f; }
+::-webkit-scrollbar-thumb { background: #00f3ff; border-radius: 3px; }
 
 .glow-cyan {
   box-shadow: 0 0 15px rgba(0, 243, 255, 0.3), inset 0 0 15px rgba(0, 243, 255, 0.2);
@@ -84,7 +73,6 @@ tailwind.config = {
 .text-glow-cyan {
   text-shadow: 0 0 8px rgba(0, 243, 255, 0.7);
 }
-
 .key-btn.inactive {
   background: #040608 !important;
   color: #1f2937 !important;
@@ -93,7 +81,6 @@ tailwind.config = {
   cursor: not-allowed;
   opacity: 0.4;
 }
-
 .key-btn:active:not(.inactive) {
   transform: scale(0.92);
   box-shadow: 0 0 8px currentColor;
@@ -102,7 +89,7 @@ tailwind.config = {
 </head>
 <body class="bg-cyber-bg text-gray-200 font-mono min-h-screen flex flex-col justify-between select-none overflow-x-hidden">
 
-<!-- Top Header Bar -->
+<!-- Header -->
 <header class="border-b border-cyber-cyan/30 bg-cyber-panel/80 p-3 px-4 flex justify-between items-center backdrop-blur z-30">
   <div class="flex items-center gap-3">
     <div class="w-3 h-3 rounded-full bg-cyber-red animate-pulse" id="status-led"></div>
@@ -118,11 +105,10 @@ tailwind.config = {
   </div>
 </header>
 
-<!-- Main Content -->
 <main class="flex-1 flex flex-col items-center justify-center p-2 sm:p-4 md:p-6 relative max-w-6xl mx-auto w-full">
   <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
 
-    <!-- LEFT / TOP: Hardware Panel -->
+    <!-- Left panel -->
     <div class="lg:col-span-4 bg-cyber-panel border-2 border-cyber-cyan/40 rounded-xl p-4 shadow-2xl relative flex flex-col gap-4 glow-cyan">
       <div class="text-center border-b border-cyber-cyan/20 pb-3">
         <div class="text-xs text-cyber-cyan/60 tracking-widest uppercase">TERMINAL #8841</div>
@@ -130,7 +116,6 @@ tailwind.config = {
         <div class="text-xs text-cyber-amber mt-1" id="booth-status-text">STATUS: ON-HOOK</div>
       </div>
 
-      <!-- Digital Display Screen -->
       <div class="bg-cyber-bg border border-cyber-green/50 rounded p-3 crt relative overflow-hidden h-28 flex flex-col justify-between crt-flicker">
         <div class="flex justify-between text-xs text-cyber-green/70">
           <span>FREQ: 144.80 MHz</span>
@@ -138,9 +123,7 @@ tailwind.config = {
         </div>
         <div class="text-center">
           <div class="text-xs text-cyber-green/50">ACTIVE BOOTH CODE</div>
-          <div id="current-booth-code" class="text-2xl font-crt text-cyber-green text-glow-cyan tracking-widest font-bold">
-            SECURE-88
-          </div>
+          <div id="current-booth-code" class="text-2xl font-crt text-cyber-green text-glow-cyan tracking-widest font-bold">SECURE-88</div>
         </div>
         <div class="text-xs text-cyber-green/80 truncate">
           ALIAS: <span id="user-alias-display" class="text-white font-bold">Caller-8402</span>
@@ -148,7 +131,6 @@ tailwind.config = {
         </div>
       </div>
 
-      <!-- Hardware Button (Receiver Hook) -->
       <div>
         <button id="hook-btn" onclick="toggleHook()" class="w-full p-3 bg-red-950/60 border border-cyber-red text-cyber-red rounded font-bold hover:bg-red-900 hover:text-white transition flex flex-col items-center justify-center gap-1 shadow">
           <i class="fa-solid fa-phone text-lg" id="hook-icon"></i>
@@ -156,7 +138,6 @@ tailwind.config = {
         </button>
       </div>
 
-      <!-- Keypad Numpad -->
       <div class="bg-cyber-glass border border-gray-800 p-3 rounded-lg">
         <div class="text-xs text-gray-400 mb-2 text-center uppercase tracking-wider">Booth Code Dialpad</div>
         <div class="grid grid-cols-3 gap-2">
@@ -174,9 +155,8 @@ tailwind.config = {
           <button onclick="pressKey('#')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">#</button>
         </div>
 
-        <!-- Code input and connect -->
         <div class="mt-3 flex gap-2">
-          <input type="text" id="dial-input" disabled placeholder="Pick up receiver..." maxlength="12" class="bg-cyber-bg border border-cyber-cyan/20 px-3 py-1 rounded text-cyber-cyan text-center font-crt text-lg w-full focus:outline-none uppercase opacity-50">
+          <input type="text" id="dial-input" disabled placeholder="Pick up receiver..." maxlength="16" class="bg-cyber-bg border border-cyber-cyan/20 px-3 py-1 rounded text-cyber-cyan text-center font-crt text-lg w-full focus:outline-none uppercase opacity-50">
           <button id="dial-btn" disabled onclick="dialBooth()" class="bg-gray-800 border border-gray-700 text-gray-500 px-4 py-1 rounded font-bold text-xs uppercase cursor-not-allowed transition">
             DIAL
           </button>
@@ -184,29 +164,24 @@ tailwind.config = {
       </div>
     </div>
 
-    <!-- RIGHT / BOTTOM: CRT Live Terminal (Zero-Logs) -->
+    <!-- Right terminal -->
     <div class="lg:col-span-8 bg-cyber-panel border-2 border-cyber-cyan/40 rounded-xl p-4 shadow-2xl flex flex-col min-h-[420px] h-[50vh] lg:h-[520px] relative glow-cyan crt">
-      <!-- Terminal Header -->
       <div class="flex justify-between items-center border-b border-cyber-cyan/20 pb-2 mb-2">
         <div class="flex items-center gap-2">
           <span class="inline-block w-2.5 h-2.5 bg-cyber-green rounded-full animate-ping" id="live-dot" style="display:none;"></span>
           <span class="text-xs text-cyber-green uppercase font-bold tracking-wider" id="live-status-label">LINE DISCONNECTED // ZERO-LOGS</span>
         </div>
-        <div class="flex gap-2">
-          <button id="buzzer-btn" disabled onclick="triggerBuzzer()" class="text-xs bg-gray-800 border border-gray-700 text-gray-500 px-2 py-1 rounded cursor-not-allowed transition">
-            <i class="fa-solid fa-bell mr-1"></i> BUZZER
-          </button>
-        </div>
+        <button id="buzzer-btn" disabled onclick="triggerBuzzer()" class="text-xs bg-gray-800 border border-gray-700 text-gray-500 px-2 py-1 rounded cursor-not-allowed transition">
+          <i class="fa-solid fa-bell mr-1"></i> BUZZER
+        </button>
       </div>
 
-      <!-- Message Display Screen -->
       <div id="message-container" class="flex-1 overflow-y-auto space-y-3 p-2 bg-cyber-bg/90 rounded border border-cyber-cyan/20 font-crt text-lg">
         <div class="text-cyber-amber border-l-2 border-cyber-amber pl-2 py-1 bg-cyber-amber/5">
-          [SYSTEM]: Receiver is on-hook. No data storage. No history. No logs. Pick up the receiver to open a fully anonymous live line.
+          [SYSTEM]: Receiver is on-hook. No data storage. No history. Pick up the receiver and dial a booth code to join a live anonymous channel.
         </div>
       </div>
 
-      <!-- Message Input Controls -->
       <div class="mt-3 flex flex-col gap-2">
         <div class="flex items-center justify-between text-xs px-1 text-gray-400">
           <label class="flex items-center gap-2 cursor-pointer">
@@ -228,14 +203,15 @@ tailwind.config = {
   </div>
 </main>
 
-<!-- Footer -->
 <footer class="text-center text-xs text-gray-600 p-3 border-t border-gray-900 bg-cyber-bg">
   <p>DeadLine Secure Network &copy; | Fully Anonymous • Zero-Logs Live Line Protocol</p>
 </footer>
 
-<!-- Logic -->
 <script>
-const channelSync = new BroadcastChannel('deadline_secure_booth');
+// ========== MQTT Setup ==========
+const MQTT_BROKER = 'wss://broker.emqx.io:8084/mqtt';
+let mqttClient = null;
+let currentTopic = null;
 
 let isMuted = false;
 let audioCtx = null;
@@ -247,13 +223,10 @@ let callSeconds = 0;
 
 document.getElementById('user-alias-display').innerText = userAlias;
 
+// Audio helpers (same as before)
 function initAudio() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
 }
 
 window.playBeep = function(freq1 = 440, freq2 = 0, duration = 0.1) {
@@ -266,7 +239,6 @@ window.playBeep = function(freq1 = 440, freq2 = 0, duration = 0.1) {
     osc1.frequency.setValueAtTime(freq1, audioCtx.currentTime);
     gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-
     osc1.connect(gain);
     if (freq2 > 0) {
       const osc2 = audioCtx.createOscillator();
@@ -276,7 +248,6 @@ window.playBeep = function(freq1 = 440, freq2 = 0, duration = 0.1) {
       osc2.start();
       osc2.stop(audioCtx.currentTime + duration);
     }
-
     gain.connect(audioCtx.destination);
     osc1.start();
     osc1.stop(audioCtx.currentTime + duration);
@@ -308,17 +279,13 @@ window.playRing = function() {
     const osc1 = audioCtx.createOscillator();
     const osc2 = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
-
     osc1.frequency.setValueAtTime(440, now);
     osc2.frequency.setValueAtTime(480, now);
-
     gain.gain.setValueAtTime(0.2, now);
     gain.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
-
     osc1.connect(gain);
     osc2.connect(gain);
     gain.connect(audioCtx.destination);
-
     osc1.start(now);
     osc2.start(now);
     osc1.stop(now + 1.2);
@@ -326,24 +293,81 @@ window.playRing = function() {
   } catch(e){}
 };
 
+// Sound toggle
 document.getElementById('sound-toggle-btn').addEventListener('click', () => {
   isMuted = !isMuted;
   const icon = document.getElementById('sound-icon');
-  const btn = document.getElementById('sound-toggle-btn');
   const textSpan = document.getElementById('sound-text');
-
   if (isMuted) {
     icon.className = 'fa-solid fa-volume-xmark';
-    btn.classList.add('opacity-50');
+    document.getElementById('sound-toggle-btn').classList.add('opacity-50');
     if (textSpan) textSpan.textContent = 'AUDIO: OFF';
   } else {
     icon.className = 'fa-solid fa-volume-high';
-    btn.classList.remove('opacity-50');
+    document.getElementById('sound-toggle-btn').classList.remove('opacity-50');
     if (textSpan) textSpan.textContent = 'AUDIO: ON';
     playBeep(800, 0, 0.1);
   }
 });
 
+// ========== MQTT Functions ==========
+function connectMQTT() {
+  if (mqttClient && mqttClient.connected) return;
+
+  mqttClient = mqtt.connect(MQTT_BROKER, {
+    clientId: 'deadline_' + Math.random().toString(16).substr(2, 8),
+    clean: true,
+    connectTimeout: 8000,
+    reconnectPeriod: 3000,
+  });
+
+  mqttClient.on('connect', () => {
+    console.log('MQTT connected');
+    if (isHookOff && currentBooth) {
+      subscribeToBooth(currentBooth);
+    }
+  });
+
+  mqttClient.on('message', (topic, message) => {
+    try {
+      const data = JSON.parse(message.toString());
+      if (isHookOff && data.booth === currentBooth) {
+        // Don't show our own messages again (we already showed them locally)
+        if (data.sender !== userAlias || data.type === 'buzzer') {
+          appendMessageToUI(data);
+        }
+      }
+    } catch (e) {}
+  });
+
+  mqttClient.on('error', (err) => {
+    console.error('MQTT error', err);
+  });
+}
+
+function subscribeToBooth(booth) {
+  if (!mqttClient || !mqttClient.connected) return;
+
+  const topic = 'deadline/booth/' + booth;
+
+  if (currentTopic && currentTopic !== topic) {
+    mqttClient.unsubscribe(currentTopic);
+  }
+
+  mqttClient.subscribe(topic, (err) => {
+    if (!err) {
+      currentTopic = topic;
+      console.log('Subscribed to', topic);
+    }
+  });
+}
+
+function publishMessage(msgData) {
+  if (!mqttClient || !mqttClient.connected || !currentTopic) return;
+  mqttClient.publish(currentTopic, JSON.stringify(msgData));
+}
+
+// ========== Main Logic ==========
 window.toggleHook = function() {
   playClick();
   isHookOff = !isHookOff;
@@ -363,7 +387,6 @@ window.toggleHook = function() {
   const secretLabel = document.getElementById('secret-label');
 
   if (isHookOff) {
-    // OFF-HOOK – line is live
     btn.className = "w-full p-3 bg-cyber-green/20 border border-cyber-green text-cyber-green rounded font-bold hover:bg-cyber-green hover:text-black transition flex flex-col items-center justify-center gap-1 shadow";
     document.getElementById('hook-text').innerText = "HANG UP RECEIVER";
     statusText.innerText = "STATUS: OFF-HOOK (LIVE)";
@@ -378,13 +401,10 @@ window.toggleHook = function() {
     dialInput.placeholder = "Code (e.g. X-9021)";
     dialBtn.disabled = false;
     dialBtn.className = "bg-cyber-cyan/20 border border-cyber-cyan text-cyber-cyan px-4 py-1 rounded hover:bg-cyber-cyan hover:text-black font-bold text-xs uppercase transition";
-
     buzzerBtn.disabled = false;
     buzzerBtn.className = "text-xs bg-cyber-amber/20 border border-cyber-amber text-cyber-amber px-2 py-1 rounded hover:bg-cyber-amber hover:text-black transition";
-
     secretCheck.disabled = false;
     secretLabel.className = "text-cyber-red";
-
     liveDot.style.display = 'inline-block';
     liveLabel.innerText = `LIVE LINE // CHANNEL: #${currentBooth}`;
 
@@ -397,9 +417,10 @@ window.toggleHook = function() {
     }, 1000);
 
     playBeep(350, 440, 0.2);
-    appendSystemMessage(`Line opened on booth #${currentBooth}. Fully anonymous. Nothing is stored.`);
+    connectMQTT();
+    subscribeToBooth(currentBooth);
+    appendSystemMessage(`Line opened on booth #${currentBooth}. Fully anonymous. Anyone with the same code can join.`);
   } else {
-    // ON-HOOK – line closed
     btn.className = "w-full p-3 bg-red-950/60 border border-cyber-red text-cyber-red rounded font-bold hover:bg-red-900 hover:text-white transition flex flex-col items-center justify-center gap-1 shadow";
     document.getElementById('hook-text').innerText = "PICK UP RECEIVER";
     statusText.innerText = "STATUS: ON-HOOK";
@@ -416,47 +437,40 @@ window.toggleHook = function() {
     dialInput.value = '';
     dialBtn.disabled = true;
     dialBtn.className = "bg-gray-800 border border-gray-700 text-gray-500 px-4 py-1 rounded font-bold text-xs uppercase cursor-not-allowed transition";
-
     buzzerBtn.disabled = true;
     buzzerBtn.className = "text-xs bg-gray-800 border border-gray-700 text-gray-500 px-2 py-1 rounded cursor-not-allowed transition";
-
     secretCheck.disabled = true;
     secretCheck.checked = false;
     secretLabel.className = "text-gray-600";
-
     liveDot.style.display = 'none';
     liveLabel.innerText = "LINE DISCONNECTED // ZERO-LOGS";
 
     clearInterval(callTimerInterval);
     document.getElementById('call-timer').innerText = "00:00";
 
+    if (currentTopic && mqttClient) {
+      mqttClient.unsubscribe(currentTopic);
+      currentTopic = null;
+    }
     appendSystemMessage("Receiver placed on-hook. Line closed. No traces left.");
   }
 };
 
 window.pressKey = function(key) {
   if (!isHookOff) return;
-
   const dtmfFreqs = {
     '1': [697, 1209], '2': [697, 1336], '3': [697, 1477],
     '4': [770, 1209], '5': [770, 1336], '6': [770, 1477],
     '7': [852, 1209], '8': [852, 1336], '9': [852, 1477],
     '*': [941, 1209], '0': [941, 1336], '#': [941, 1477]
   };
-
-  if (dtmfFreqs[key]) {
-    playBeep(dtmfFreqs[key][0], dtmfFreqs[key][1], 0.12);
-  }
-
+  if (dtmfFreqs[key]) playBeep(dtmfFreqs[key][0], dtmfFreqs[key][1], 0.12);
   const input = document.getElementById('dial-input');
-  if (input.value.length < 12) {
-    input.value += key;
-  }
+  if (input.value.length < 16) input.value += key;
 };
 
 window.dialBooth = function() {
   if (!isHookOff) return;
-
   const input = document.getElementById('dial-input');
   let code = input.value.trim().toUpperCase();
   if (!code) return;
@@ -467,9 +481,9 @@ window.dialBooth = function() {
   document.getElementById('live-status-label').innerText = `LIVE LINE // CHANNEL: #${currentBooth}`;
   input.value = '';
 
-  const container = document.getElementById('message-container');
-  container.innerHTML = '';
-  appendSystemMessage(`Switched to booth #${currentBooth}. Anonymous connection established. Nothing is logged.`);
+  document.getElementById('message-container').innerHTML = '';
+  subscribeToBooth(currentBooth);
+  appendSystemMessage(`Switched to booth #${currentBooth}. Anyone who dials the same code can join this anonymous channel.`);
 };
 
 window.changeAlias = function() {
@@ -486,7 +500,6 @@ window.sendMessage = function() {
   const input = document.getElementById('chat-input');
   const text = input.value.trim();
   const isSecret = document.getElementById('secret-msg-check').checked;
-
   if (!text) return;
 
   input.value = '';
@@ -502,28 +515,19 @@ window.sendMessage = function() {
     time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
   };
 
-  appendMessageToUI(msgData);
-  channelSync.postMessage(msgData);
+  appendMessageToUI(msgData);   // show locally immediately
+  publishMessage(msgData);      // send to others
 };
 
 window.triggerBuzzer = function() {
   if (!isHookOff) return;
-
   const msgData = {
     booth: currentBooth,
     sender: userAlias,
     type: 'buzzer'
   };
-
   appendMessageToUI(msgData);
-  channelSync.postMessage(msgData);
-};
-
-channelSync.onmessage = (event) => {
-  const data = event.data;
-  if (isHookOff && data.booth === currentBooth) {
-    appendMessageToUI(data);
-  }
+  publishMessage(msgData);
 };
 
 function appendMessageToUI(msg) {
@@ -590,10 +594,11 @@ function escapeHtml(text) {
 }
 
 document.getElementById('chat-input').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') {
-    sendMessage();
-  }
+  if (e.key === 'Enter') sendMessage();
 });
+
+// Auto-connect MQTT when page loads (so it's ready faster)
+connectMQTT();
 </script>
 </body>
 </html>
