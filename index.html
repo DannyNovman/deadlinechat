@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>DeadLine // Secure Booth</title>
+<title>PASSROOM</title>
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="manifest" href="manifest.json">
@@ -47,9 +47,14 @@ tailwind.config = {
 <style>
 html, body {
   height: 100%;
-  overflow: hidden; /* megakadályozza a húzogatást/zoomot */
   overscroll-behavior: none;
   touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .crt::before {
@@ -92,23 +97,20 @@ html, body {
   box-shadow: 0 0 8px currentColor;
 }
 
-/* Mobil optimalizálás */
-@media (max-width: 1023px) {
-  .mobile-chat {
-    flex: 1 1 auto;
-    min-height: 0;
-  }
+/* Prevent pinch-zoom but allow scroll */
+* {
+  -webkit-user-drag: none;
 }
 </style>
 </head>
-<body class="bg-cyber-bg text-gray-200 font-mono h-full flex flex-col select-none overflow-hidden">
+<body class="bg-cyber-bg text-gray-200 font-mono min-h-full flex flex-col select-none">
 
 <!-- Header -->
-<header class="border-b border-cyber-cyan/30 bg-cyber-panel/80 p-3 px-4 flex justify-between items-center backdrop-blur z-30 shrink-0">
+<header class="border-b border-cyber-cyan/30 bg-cyber-panel/80 p-3 px-4 flex justify-between items-center backdrop-blur z-30 sticky top-0">
   <div class="flex items-center gap-3">
     <div class="w-3 h-3 rounded-full bg-cyber-red animate-pulse" id="status-led"></div>
     <h1 class="font-display text-cyber-cyan text-base sm:text-lg md:text-xl tracking-wider uppercase font-bold text-glow-cyan">
-      <i class="fa-solid fa-phone-flip mr-2"></i> DEADLINE // SECURE BOOTH
+      <i class="fa-solid fa-door-closed mr-2"></i> PASSROOM
     </h1>
   </div>
   <div class="flex items-center gap-4 text-xs md:text-sm">
@@ -120,14 +122,14 @@ html, body {
 </header>
 
 <!-- Main Content -->
-<main class="flex-1 flex flex-col min-h-0 p-2 sm:p-3 md:p-4 max-w-6xl mx-auto w-full">
-  <div class="w-full h-full grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 min-h-0">
+<main class="flex-1 flex flex-col p-2 sm:p-3 md:p-4 max-w-6xl mx-auto w-full">
+  <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4">
 
     <!-- LEFT: Hardware Panel -->
-    <div class="lg:col-span-4 bg-cyber-panel border-2 border-cyber-cyan/40 rounded-xl p-3 sm:p-4 shadow-2xl relative flex flex-col gap-3 glow-cyan shrink-0 lg:h-full lg:overflow-y-auto">
+    <div class="lg:col-span-4 bg-cyber-panel border-2 border-cyber-cyan/40 rounded-xl p-3 sm:p-4 shadow-2xl relative flex flex-col gap-3 glow-cyan">
       <div class="text-center border-b border-cyber-cyan/20 pb-2">
         <div class="text-xs text-cyber-cyan/60 tracking-widest uppercase">TERMINAL #8841</div>
-        <div class="text-lg sm:text-xl font-display text-cyber-cyan font-bold">DEADLINE</div>
+        <div class="text-lg sm:text-xl font-display text-cyber-cyan font-bold">PASSROOM</div>
         <div class="text-xs text-cyber-amber mt-1" id="booth-status-text">STATUS: ON-HOOK</div>
       </div>
 
@@ -138,7 +140,7 @@ html, body {
           <span id="call-timer">00:00</span>
         </div>
         <div class="text-center">
-          <div class="text-xs text-cyber-green/50">ACTIVE BOOTH CODE</div>
+          <div class="text-xs text-cyber-green/50">ACTIVE ROOM CODE</div>
           <div id="current-booth-code" class="text-xl sm:text-2xl font-crt text-cyber-green text-glow-cyan tracking-widest font-bold">SECURE-88</div>
         </div>
         <div class="text-xs text-cyber-green/80 truncate">
@@ -157,7 +159,7 @@ html, body {
 
       <!-- Keypad -->
       <div class="bg-cyber-glass border border-gray-800 p-3 rounded-lg">
-        <div class="text-xs text-gray-400 mb-2 text-center uppercase tracking-wider">Booth Code Dialpad</div>
+        <div class="text-xs text-gray-400 mb-2 text-center uppercase tracking-wider">Room Code Dialpad</div>
         <div class="grid grid-cols-3 gap-2">
           <button onclick="pressKey('1')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2.5 rounded font-crt text-xl">1</button>
           <button onclick="pressKey('2')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2.5 rounded font-crt text-xl">2</button>
@@ -183,7 +185,7 @@ html, body {
     </div>
 
     <!-- RIGHT: Chat Terminal -->
-    <div class="lg:col-span-8 bg-cyber-panel border-2 border-cyber-cyan/40 rounded-xl p-3 sm:p-4 shadow-2xl flex flex-col relative glow-cyan crt mobile-chat lg:h-full min-h-0">
+    <div class="lg:col-span-8 bg-cyber-panel border-2 border-cyber-cyan/40 rounded-xl p-3 sm:p-4 shadow-2xl flex flex-col relative glow-cyan crt min-h-[60vh] lg:min-h-[640px]">
       <!-- Terminal Header -->
       <div class="flex justify-between items-center border-b border-cyber-cyan/20 pb-2 mb-2 shrink-0">
         <div class="flex items-center gap-2">
@@ -195,10 +197,10 @@ html, body {
         </button>
       </div>
 
-      <!-- Messages -->
-      <div id="message-container" class="flex-1 overflow-y-auto space-y-3 p-2 bg-cyber-bg/90 rounded border border-cyber-cyan/20 font-crt text-base sm:text-lg min-h-0">
+      <!-- Messages - this is the main scrollable area -->
+      <div id="message-container" class="flex-1 overflow-y-auto space-y-3 p-2 bg-cyber-bg/90 rounded border border-cyber-cyan/20 font-crt text-base sm:text-lg" style="min-height: 200px;">
         <div class="text-cyber-amber border-l-2 border-cyber-amber pl-2 py-1 bg-cyber-amber/5">
-          [SYSTEM]: Receiver is on-hook. No data storage. No history. Pick up the receiver and dial a booth code to join a live anonymous channel.
+          [SYSTEM]: Receiver is on-hook. No data storage. No history. Pick up the receiver and dial a room code to join a live anonymous channel.
         </div>
       </div>
 
@@ -225,9 +227,9 @@ html, body {
   </div>
 </main>
 
-<!-- Footer - only on larger screens -->
-<footer class="text-center text-xs text-gray-600 p-2 border-t border-gray-900 bg-cyber-bg shrink-0 hidden sm:block">
-  <p>DeadLine Secure Network &copy; | Fully Anonymous • Zero-Logs Live Line Protocol</p>
+<!-- Footer -->
+<footer class="text-center text-xs text-gray-600 p-3 border-t border-gray-900 bg-cyber-bg mt-auto">
+  <p>PASSROOM &copy; | Fully Anonymous • Zero-Logs Live Protocol</p>
 </footer>
 
 <script>
@@ -337,7 +339,7 @@ function connectMQTT() {
   if (mqttClient && mqttClient.connected) return;
 
   mqttClient = mqtt.connect(MQTT_BROKER, {
-    clientId: 'deadline_' + Math.random().toString(16).substr(2, 8),
+    clientId: 'passroom_' + Math.random().toString(16).substr(2, 8),
     clean: true,
     connectTimeout: 8000,
     reconnectPeriod: 3000,
@@ -361,7 +363,7 @@ function connectMQTT() {
 
 function subscribeToBooth(booth) {
   if (!mqttClient || !mqttClient.connected) return;
-  const topic = 'deadline/booth/' + booth;
+  const topic = 'passroom/room/' + booth;
   if (currentTopic && currentTopic !== topic) mqttClient.unsubscribe(currentTopic);
   mqttClient.subscribe(topic, (err) => {
     if (!err) currentTopic = topic;
@@ -412,7 +414,7 @@ window.toggleHook = function() {
     secretCheck.disabled = false;
     secretLabel.className = "text-cyber-red";
     liveDot.style.display = 'inline-block';
-    liveLabel.innerText = `LIVE LINE // CHANNEL: #${currentBooth}`;
+    liveLabel.innerText = `LIVE LINE // ROOM: #${currentBooth}`;
 
     callSeconds = 0;
     callTimerInterval = setInterval(() => {
@@ -425,7 +427,7 @@ window.toggleHook = function() {
     playBeep(350, 440, 0.2);
     connectMQTT();
     subscribeToBooth(currentBooth);
-    appendSystemMessage(`Line opened on booth #${currentBooth}. Fully anonymous. Anyone with the same code can join.`);
+    appendSystemMessage(`Line opened on room #${currentBooth}. Fully anonymous. Anyone with the same code can join.`);
   } else {
     btn.className = "w-full p-3 bg-red-950/60 border border-cyber-red text-cyber-red rounded font-bold hover:bg-red-900 hover:text-white transition flex flex-col items-center justify-center gap-1 shadow";
     document.getElementById('hook-text').innerText = "PICK UP RECEIVER";
@@ -484,12 +486,12 @@ window.dialBooth = function() {
   playBeep(600, 900, 0.2);
   currentBooth = code;
   document.getElementById('current-booth-code').innerText = currentBooth;
-  document.getElementById('live-status-label').innerText = `LIVE LINE // CHANNEL: #${currentBooth}`;
+  document.getElementById('live-status-label').innerText = `LIVE LINE // ROOM: #${currentBooth}`;
   input.value = '';
 
   document.getElementById('message-container').innerHTML = '';
   subscribeToBooth(currentBooth);
-  appendSystemMessage(`Switched to booth #${currentBooth}. Anyone who dials the same code can join this anonymous channel.`);
+  appendSystemMessage(`Switched to room #${currentBooth}. Anyone who dials the same code can join this anonymous channel.`);
 };
 
 window.changeAlias = function() {
@@ -542,7 +544,7 @@ function appendMessageToUI(msg) {
 
   if (msg.type === 'buzzer') {
     div.className = 'bg-cyber-red/10 border border-cyber-red text-cyber-red p-2 rounded text-center font-bold animate-pulse';
-    div.innerHTML = `<i class="fa-solid fa-bell"></i> ${escapeHtml(msg.sender)} BUZZED THE BOOTH!`;
+    div.innerHTML = `<i class="fa-solid fa-bell"></i> ${escapeHtml(msg.sender)} BUZZED THE ROOM!`;
     playRing();
   } else if (msg.isSecret) {
     div.className = 'bg-cyber-red/20 border-l-4 border-cyber-red p-2 rounded my-1 text-cyber-red';
@@ -598,7 +600,7 @@ document.getElementById('chat-input').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') sendMessage();
 });
 
-// Prevent pinch zoom on iOS
+// Prevent pinch-zoom on iOS
 document.addEventListener('gesturestart', function (e) {
   e.preventDefault();
 });
