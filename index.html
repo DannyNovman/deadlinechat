@@ -112,10 +112,10 @@ body {
 </header>
 
 <main class="flex-1 p-3 sm:p-4 max-w-6xl mx-auto w-full">
-  <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-4 lg:items-stretch">
+  <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-4">
 
-    <!-- LEFT PANEL -->
-    <div class="lg:col-span-4 bg-cyber-panel border-2 border-cyber-cyan/40 rounded-xl p-4 shadow-2xl relative flex flex-col gap-3 glow-cyan lg:min-h-[640px]">
+    <!-- LEFT PANEL - same height as right on desktop -->
+    <div class="lg:col-span-4 bg-cyber-panel border-2 border-cyber-cyan/40 rounded-xl p-4 shadow-2xl relative flex flex-col gap-3 glow-cyan lg:h-[640px]">
       <div class="text-center border-b border-cyber-cyan/20 pb-2">
         <div class="text-xs text-cyber-cyan/60 tracking-widest uppercase">TERMINAL #8841</div>
         <div class="text-lg sm:text-xl font-display text-cyber-cyan font-bold">PASSROOM</div>
@@ -145,7 +145,7 @@ body {
         </button>
       </div>
 
-      <div class="bg-cyber-glass border border-gray-800 p-3 rounded-lg">
+      <div class="bg-cyber-glass border border-gray-800 p-3 rounded-lg flex-1">
         <div class="text-xs text-gray-400 mb-2 text-center uppercase tracking-wider">Room Code Dialpad</div>
         <div class="grid grid-cols-3 gap-2">
           <button onclick="pressKey('1')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2.5 rounded font-crt text-xl">1</button>
@@ -168,7 +168,7 @@ body {
       </div>
     </div>
 
-    <!-- RIGHT PANEL - same height on desktop -->
+    <!-- RIGHT PANEL - same height -->
     <div class="lg:col-span-8 bg-cyber-panel border-2 border-cyber-cyan/40 rounded-xl p-4 shadow-2xl flex flex-col relative glow-cyan crt h-[75vh] sm:h-[78vh] lg:h-[640px]">
       <div class="flex justify-between items-center border-b border-cyber-cyan/20 pb-2 mb-2 shrink-0">
         <div class="flex items-center gap-2">
