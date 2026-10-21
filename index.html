@@ -1,609 +1,599 @@
 <!DOCTYPE html>
-<html lang="hu">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anonim Telefonfülke | The Cyber Booth</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Orbitron:wght@500;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeadLine // Secure Booth</title>
+<!-- Mobil / PWA ikonok és beállítások -->
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#080a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        cyber: {
-                            bg: '#080a0f',
-                            panel: '#0f141d',
-                            glass: '#131c27',
-                            amber: '#ffb000',
-                            cyan: '#00f3ff',
-                            red: '#ff2a6d',
-                            green: '#05ffa1',
-                        }
-                    },
-                    fontFamily: {
-                        crt: ['VT323', 'monospace'],
-                        mono: ['Share Tech Mono', 'monospace'],
-                        display: ['Orbitron', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- FontAwesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Orbitron:wght@500;800&display=swap" rel="stylesheet">
 
-    <style>
-        .crt::before {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 20;
-            background-size: 100% 3px, 6px 100%;
-            pointer-events: none;
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        cyber: {
+          bg: '#080a0f',
+          panel: '#0f141d',
+          glass: '#131c27',
+          amber: '#ffb000',
+          cyan: '#00f3ff',
+          red: '#ff2a6d',
+          green: '#05ffa1',
         }
+      },
+      fontFamily: {
+        crt: ['VT323', 'monospace'],
+        mono: ['Share Tech Mono', 'monospace'],
+        display: ['Orbitron', 'sans-serif'],
+      }
+    }
+  }
+}
+</script>
 
-        @keyframes flicker {
-            0% { opacity: 0.97; }
-            50% { opacity: 1; }
-            100% { opacity: 0.98; }
-        }
-        .crt-flicker {
-            animation: flicker 0.15s infinite;
-        }
+<style>
+.crt::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 20;
+  background-size: 100% 3px, 6px 100%;
+  pointer-events: none;
+}
 
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #080a0f;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #00f3ff;
-            border-radius: 3px;
-        }
+@keyframes flicker {
+  0% { opacity: 0.97; }
+  50% { opacity: 1; }
+  100% { opacity: 0.98; }
+}
+.crt-flicker {
+  animation: flicker 0.15s infinite;
+}
 
-        .glow-cyan {
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3), inset 0 0 15px rgba(0, 243, 255, 0.2);
-        }
-        .text-glow-cyan {
-            text-shadow: 0 0 8px rgba(0, 243, 255, 0.7);
-        }
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #080a0f;
+}
+::-webkit-scrollbar-thumb {
+  background: #00f3ff;
+  border-radius: 3px;
+}
 
-        /* Inaktív / Sötét gombok stílusa, ha le van véve a vonal */
-        .key-btn.inactive {
-            background: #040608 !important;
-            color: #1f2937 !important;
-            border-color: #111827 !important;
-            box-shadow: none !important;
-            cursor: not-allowed;
-            opacity: 0.4;
-        }
+.glow-cyan {
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.3), inset 0 0 15px rgba(0, 243, 255, 0.2);
+}
+.text-glow-cyan {
+  text-shadow: 0 0 8px rgba(0, 243, 255, 0.7);
+}
 
-        .key-btn:active:not(.inactive) {
-            transform: scale(0.92);
-            box-shadow: 0 0 8px currentColor;
-        }
-    </style>
+.key-btn.inactive {
+  background: #040608 !important;
+  color: #1f2937 !important;
+  border-color: #111827 !important;
+  box-shadow: none !important;
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.key-btn:active:not(.inactive) {
+  transform: scale(0.92);
+  box-shadow: 0 0 8px currentColor;
+}
+</style>
 </head>
 <body class="bg-cyber-bg text-gray-200 font-mono min-h-screen flex flex-col justify-between select-none overflow-x-hidden">
 
-    <!-- Felső állapotsáv -->
-    <header class="border-b border-cyber-cyan/30 bg-cyber-panel/80 p-3 px-4 flex justify-between items-center backdrop-blur z-30">
-        <div class="flex items-center gap-3">
-            <div class="w-3 h-3 rounded-full bg-cyber-red animate-pulse" id="status-led"></div>
-            <h1 class="font-display text-cyber-cyan text-lg md:text-xl tracking-wider uppercase font-bold text-glow-cyan">
-                <i class="fa-solid fa-phone-flip mr-2"></i> Cyber-Booth // v4.20
-            </h1>
+<!-- Top Header Bar -->
+<header class="border-b border-cyber-cyan/30 bg-cyber-panel/80 p-3 px-4 flex justify-between items-center backdrop-blur z-30">
+  <div class="flex items-center gap-3">
+    <div class="w-3 h-3 rounded-full bg-cyber-red animate-pulse" id="status-led"></div>
+    <h1 class="font-display text-cyber-cyan text-lg md:text-xl tracking-wider uppercase font-bold text-glow-cyan">
+      <i class="fa-solid fa-phone-flip mr-2"></i> DEADLINE // SECURE BOOTH
+    </h1>
+  </div>
+  <div class="flex items-center gap-4 text-xs md:text-sm">
+    <button id="sound-toggle-btn" class="border border-cyber-cyan/50 hover:border-cyber-cyan px-3 py-1 rounded text-cyber-cyan hover:bg-cyber-cyan/10 transition">
+      <i class="fa-solid fa-volume-high" id="sound-icon"></i>
+      <span class="hidden md:inline" id="sound-text">AUDIO: ON</span>
+    </button>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main class="flex-1 flex flex-col items-center justify-center p-2 sm:p-4 md:p-6 relative max-w-6xl mx-auto w-full">
+  <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+
+    <!-- LEFT / TOP: Hardware Panel -->
+    <div class="lg:col-span-4 bg-cyber-panel border-2 border-cyber-cyan/40 rounded-xl p-4 shadow-2xl relative flex flex-col gap-4 glow-cyan">
+      <div class="text-center border-b border-cyber-cyan/20 pb-3">
+        <div class="text-xs text-cyber-cyan/60 tracking-widest uppercase">TERMINAL #8841</div>
+        <div class="text-xl font-display text-cyber-cyan font-bold">DEADLINE</div>
+        <div class="text-xs text-cyber-amber mt-1" id="booth-status-text">STATUS: ON-HOOK</div>
+      </div>
+
+      <!-- Digital Display Screen -->
+      <div class="bg-cyber-bg border border-cyber-green/50 rounded p-3 crt relative overflow-hidden h-28 flex flex-col justify-between crt-flicker">
+        <div class="flex justify-between text-xs text-cyber-green/70">
+          <span>FREQ: 144.80 MHz</span>
+          <span id="call-timer">00:00</span>
         </div>
-        <div class="flex items-center gap-4 text-xs md:text-sm">
-            <button id="sound-toggle-btn" class="border border-cyber-cyan/50 hover:border-cyber-cyan px-3 py-1 rounded text-cyber-cyan hover:bg-cyber-cyan/10 transition">
-                <i class="fa-solid fa-volume-high" id="sound-icon"></i> <span class="hidden md:inline">HANG: BE</span>
-            </button>
+        <div class="text-center">
+          <div class="text-xs text-cyber-green/50">ACTIVE BOOTH CODE</div>
+          <div id="current-booth-code" class="text-2xl font-crt text-cyber-green text-glow-cyan tracking-widest font-bold">
+            SECURE-88
+          </div>
         </div>
-    </header>
+        <div class="text-xs text-cyber-green/80 truncate">
+          ALIAS: <span id="user-alias-display" class="text-white font-bold">Caller-8402</span>
+          <button onclick="changeAlias()" class="ml-2 text-cyber-cyan underline hover:text-white">[Change]</button>
+        </div>
+      </div>
 
-    <!-- Fő tartalom -->
-    <main class="flex-1 flex flex-col items-center justify-center p-2 sm:p-4 md:p-6 relative max-w-6xl mx-auto w-full">
-        
-        <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+      <!-- Hardware Button (Receiver Hook) -->
+      <div>
+        <button id="hook-btn" onclick="toggleHook()" class="w-full p-3 bg-red-950/60 border border-cyber-red text-cyber-red rounded font-bold hover:bg-red-900 hover:text-white transition flex flex-col items-center justify-center gap-1 shadow">
+          <i class="fa-solid fa-phone text-lg" id="hook-icon"></i>
+          <span id="hook-text" class="text-xs">PICK UP RECEIVER</span>
+        </button>
+      </div>
 
-            <!-- BAL / FELSŐ: Hardver panel -->
-            <div class="lg:col-span-4 bg-cyber-panel border-2 border-cyber-cyan/40 rounded-xl p-4 shadow-2xl relative flex flex-col gap-4 glow-cyan">
-                
-                <div class="text-center border-b border-cyber-cyan/20 pb-3">
-                    <div class="text-xs text-cyber-cyan/60 tracking-widest uppercase">HÁLÓZATI ELEM #8841</div>
-                    <div class="text-xl font-display text-cyber-cyan font-bold">TELEFONFÜLKE</div>
-                    <div class="text-xs text-cyber-amber mt-1" id="booth-status-text">ÁLLAPOT: KAGYLÓ LERAKVA</div>
-                </div>
-
-                <!-- Digitális kijelző -->
-                <div class="bg-cyber-bg border border-cyber-green/50 rounded p-3 crt relative overflow-hidden h-28 flex flex-col justify-between crt-flicker">
-                    <div class="flex justify-between text-xs text-cyber-green/70">
-                        <span>FREKVENCIA: 144.80 MHz</span>
-                        <span id="call-timer">00:00</span>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-xs text-cyber-green/50">JELENLEGI FÜLKE KÓD</div>
-                        <div id="current-booth-code" class="text-2xl font-crt text-cyber-green text-glow-cyan tracking-widest font-bold">
-                            TITKOS-88
-                        </div>
-                    </div>
-                    <div class="text-xs text-cyber-green/80 truncate">
-                        NÉV: <span id="user-alias-display" class="text-white font-bold">Hívó-8402</span>
-                        <button onclick="changeAlias()" class="ml-2 text-cyber-cyan underline hover:text-white">[Módosít]</button>
-                    </div>
-                </div>
-
-                <!-- Hardver gomb (Kagyló) -->
-                <div>
-                    <button id="hook-btn" onclick="toggleHook()" class="w-full p-3 bg-red-950/60 border border-cyber-red text-cyber-red rounded font-bold hover:bg-cyber-red hover:text-black transition flex flex-col items-center justify-center gap-1 shadow">
-                        <i class="fa-solid fa-phone text-lg" id="hook-icon"></i>
-                        <span id="hook-text" class="text-xs">KAGYLÓ FELVÉTELE</span>
-                    </button>
-                </div>
-
-                <!-- Számbillentyűzet (Kagylófüggő világítás és működés) -->
-                <div class="bg-cyber-glass border border-gray-800 p-3 rounded-lg">
-                    <div class="text-xs text-gray-400 mb-2 text-center uppercase tracking-wider">Fülke Kód Tárcsázó (Numpad)</div>
-                    <div class="grid grid-cols-3 gap-2">
-                        <button onclick="pressKey('1')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">1</button>
-                        <button onclick="pressKey('2')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">2</button>
-                        <button onclick="pressKey('3')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">3</button>
-                        <button onclick="pressKey('4')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">4</button>
-                        <button onclick="pressKey('5')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">5</button>
-                        <button onclick="pressKey('6')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">6</button>
-                        <button onclick="pressKey('7')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">7</button>
-                        <button onclick="pressKey('8')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">8</button>
-                        <button onclick="pressKey('9')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">9</button>
-                        <button onclick="pressKey('*')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">*</button>
-                        <button onclick="pressKey('0')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">0</button>
-                        <button onclick="pressKey('#')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">#</button>
-                    </div>
-
-                    <!-- Kód bevitele és kapcsolás -->
-                    <div class="mt-3 flex gap-2">
-                        <input type="text" id="dial-input" disabled placeholder="Vedd fel a kagylót..." maxlength="12" class="bg-cyber-bg border border-cyber-cyan/20 px-3 py-1 rounded text-cyber-cyan text-center font-crt text-lg w-full focus:outline-none uppercase opacity-50">
-                        <button id="dial-btn" disabled onclick="dialBooth()" class="bg-gray-800 border border-gray-700 text-gray-500 px-4 py-1 rounded font-bold text-xs uppercase cursor-not-allowed transition">
-                            KAPCSOLÁS
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- JOBB / ALSÓ: CRT Élő Üzenő Kijelző (Zero-Logs) -->
-            <div class="lg:col-span-8 bg-cyber-panel border-2 border-cyber-cyan/40 rounded-xl p-4 shadow-2xl flex flex-col h-[520px] relative glow-cyan crt">
-                
-                <!-- Terminal Fejléc -->
-                <div class="flex justify-between items-center border-b border-cyber-cyan/20 pb-2 mb-2">
-                    <div class="flex items-center gap-2">
-                        <span class="inline-block w-2.5 h-2.5 bg-cyber-green rounded-full animate-ping" id="live-dot" style="display:none;"></span>
-                        <span class="text-xs text-cyber-green uppercase font-bold tracking-wider" id="live-status-label">VONAL BONTVA // ZERO-LOGS</span>
-                    </div>
-                    <div class="flex gap-2">
-                        <button id="buzzer-btn" disabled onclick="triggerBuzzer()" class="text-xs bg-gray-800 border border-gray-700 text-gray-500 px-2 py-1 rounded cursor-not-allowed transition">
-                            <i class="fa-solid fa-bell mr-1"></i> CSÖRGETÉS
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Üzenetek Kijelzője -->
-                <div id="message-container" class="flex-1 overflow-y-auto space-y-3 p-2 bg-cyber-bg/90 rounded border border-cyber-cyan/20 font-crt text-lg">
-                    <div class="text-cyber-amber border-l-2 border-cyber-amber pl-2 py-1 bg-cyber-amber/5">
-                        [RENDSZER]: A kagyló a helyén van. Nincs tárolás, nincs előzmény. Vedd fel a kagylót a fülke használatához!
-                    </div>
-                </div>
-
-                <!-- Üzenetküldő Vezérlők -->
-                <div class="mt-3 flex flex-col gap-2">
-                    <div class="flex items-center justify-between text-xs px-1 text-gray-400">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" id="secret-msg-check" disabled class="accent-cyber-red">
-                            <span class="text-gray-600" id="secret-label"><i class="fa-solid fa-bomb mr-1"></i> Titkos Üzenet (Önmegsemmisítő 10s)</span>
-                        </label>
-                        <span class="text-gray-500 text-[10px]">Csak vonalban él</span>
-                    </div>
-
-                    <div class="flex gap-2">
-                        <input type="text" id="chat-input" disabled placeholder="Előbb vedd fel a kagylót..." class="flex-1 bg-cyber-bg border border-cyber-cyan/40 rounded px-4 py-2 text-cyber-cyan font-mono placeholder-gray-600 focus:outline-none focus:border-cyber-cyan text-sm sm:text-base">
-                        <button id="send-btn" disabled onclick="sendMessage()" class="bg-cyber-cyan/20 border border-cyber-cyan text-cyber-cyan px-5 py-2 rounded hover:bg-cyber-cyan hover:text-black font-bold transition flex items-center gap-2">
-                            <span>KÜLDÉS</span>
-                            <i class="fa-solid fa-paper-plane text-xs"></i>
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-
+      <!-- Keypad Numpad -->
+      <div class="bg-cyber-glass border border-gray-800 p-3 rounded-lg">
+        <div class="text-xs text-gray-400 mb-2 text-center uppercase tracking-wider">Booth Code Dialpad</div>
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="pressKey('1')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">1</button>
+          <button onclick="pressKey('2')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">2</button>
+          <button onclick="pressKey('3')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">3</button>
+          <button onclick="pressKey('4')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">4</button>
+          <button onclick="pressKey('5')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">5</button>
+          <button onclick="pressKey('6')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">6</button>
+          <button onclick="pressKey('7')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">7</button>
+          <button onclick="pressKey('8')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">8</button>
+          <button onclick="pressKey('9')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">9</button>
+          <button onclick="pressKey('*')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">*</button>
+          <button onclick="pressKey('0')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">0</button>
+          <button onclick="pressKey('#')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2 rounded font-crt text-xl">#</button>
         </div>
 
-    </main>
+        <!-- Code input and connect -->
+        <div class="mt-3 flex gap-2">
+          <input type="text" id="dial-input" disabled placeholder="Pick up receiver..." maxlength="12" class="bg-cyber-bg border border-cyber-cyan/20 px-3 py-1 rounded text-cyber-cyan text-center font-crt text-lg w-full focus:outline-none uppercase opacity-50">
+          <button id="dial-btn" disabled onclick="dialBooth()" class="bg-gray-800 border border-gray-700 text-gray-500 px-4 py-1 rounded font-bold text-xs uppercase cursor-not-allowed transition">
+            DIAL
+          </button>
+        </div>
+      </div>
+    </div>
 
-    <!-- Lábléc -->
-    <footer class="text-center text-xs text-gray-600 p-3 border-t border-gray-900 bg-cyber-bg">
-        <p>Anonim Telefonfülke Hálózat &copy; | Zero-Logs Élő Vonal Protokoll</p>
-    </footer>
+    <!-- RIGHT / BOTTOM: CRT Live Terminal (Zero-Logs) -->
+    <div class="lg:col-span-8 bg-cyber-panel border-2 border-cyber-cyan/40 rounded-xl p-4 shadow-2xl flex flex-col min-h-[420px] h-[50vh] lg:h-[520px] relative glow-cyan crt">
+      <!-- Terminal Header -->
+      <div class="flex justify-between items-center border-b border-cyber-cyan/20 pb-2 mb-2">
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-2.5 h-2.5 bg-cyber-green rounded-full animate-ping" id="live-dot" style="display:none;"></span>
+          <span class="text-xs text-cyber-green uppercase font-bold tracking-wider" id="live-status-label">LINE DISCONNECTED // ZERO-LOGS</span>
+        </div>
+        <div class="flex gap-2">
+          <button id="buzzer-btn" disabled onclick="triggerBuzzer()" class="text-xs bg-gray-800 border border-gray-700 text-gray-500 px-2 py-1 rounded cursor-not-allowed transition">
+            <i class="fa-solid fa-bell mr-1"></i> BUZZER
+          </button>
+        </div>
+      </div>
 
-    <!-- Valós idejű BroadcastChannel (Nincs adatbázis tárolás, csak élő közvetítés) -->
-    <script>
-        // Üzenetek szinkronizálása csak a jelenleg vonalban lévők között (semmit sem ment el háttérbe)
-        const channelSync = new BroadcastChannel('cyber_zero_logs_booth');
+      <!-- Message Display Screen -->
+      <div id="message-container" class="flex-1 overflow-y-auto space-y-3 p-2 bg-cyber-bg/90 rounded border border-cyber-cyan/20 font-crt text-lg">
+        <div class="text-cyber-amber border-l-2 border-cyber-amber pl-2 py-1 bg-cyber-amber/5">
+          [SYSTEM]: Receiver is on-hook. No data storage. No history. No logs. Pick up the receiver to open a fully anonymous live line.
+        </div>
+      </div>
 
-        let isMuted = false;
-        let audioCtx = null;
-        let currentBooth = 'TITKOS-88';
-        let isHookOff = false;
-        let userAlias = 'Hívó-' + Math.floor(1000 + Math.random() * 9000);
-        let callTimerInterval = null;
-        let callSeconds = 0;
+      <!-- Message Input Controls -->
+      <div class="mt-3 flex flex-col gap-2">
+        <div class="flex items-center justify-between text-xs px-1 text-gray-400">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="secret-msg-check" disabled class="accent-cyber-red">
+            <span class="text-gray-600" id="secret-label"><i class="fa-solid fa-bomb mr-1"></i> Secret Message (self-destructs in 10s)</span>
+          </label>
+          <span class="text-gray-500 text-[10px]">Active only while off-hook</span>
+        </div>
 
-        document.getElementById('user-alias-display').innerText = userAlias;
+        <div class="flex gap-2">
+          <input type="text" id="chat-input" disabled placeholder="Pick up receiver first..." class="flex-1 bg-cyber-bg border border-cyber-cyan/40 rounded px-4 py-2 text-cyber-cyan font-mono placeholder-gray-600 focus:outline-none focus:border-cyber-cyan text-sm sm:text-base">
+          <button id="send-btn" disabled onclick="sendMessage()" class="bg-cyber-cyan/20 border border-cyber-cyan text-cyber-cyan px-5 py-2 rounded hover:bg-cyber-cyan hover:text-black font-bold transition flex items-center gap-2">
+            <span>SEND</span>
+            <i class="fa-solid fa-paper-plane text-xs"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
 
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-        }
+<!-- Footer -->
+<footer class="text-center text-xs text-gray-600 p-3 border-t border-gray-900 bg-cyber-bg">
+  <p>DeadLine Secure Network &copy; | Fully Anonymous • Zero-Logs Live Line Protocol</p>
+</footer>
 
-        window.playBeep = function(freq1 = 440, freq2 = 0, duration = 0.1) {
-            if (isMuted) return;
-            try {
-                initAudio();
-                const osc1 = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                
-                osc1.type = 'sine';
-                osc1.frequency.setValueAtTime(freq1, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+<!-- Logic -->
+<script>
+const channelSync = new BroadcastChannel('deadline_secure_booth');
 
-                osc1.connect(gain);
-                
-                if (freq2 > 0) {
-                    const osc2 = audioCtx.createOscillator();
-                    osc2.type = 'sine';
-                    osc2.frequency.setValueAtTime(freq2, audioCtx.currentTime);
-                    osc2.connect(gain);
-                    osc2.start();
-                    osc2.stop(audioCtx.currentTime + duration);
-                }
+let isMuted = false;
+let audioCtx = null;
+let currentBooth = 'SECURE-88';
+let isHookOff = false;
+let userAlias = 'Caller-' + Math.floor(1000 + Math.random() * 9000);
+let callTimerInterval = null;
+let callSeconds = 0;
 
-                gain.connect(audioCtx.destination);
-                osc1.start();
-                osc1.stop(audioCtx.currentTime + duration);
-            } catch (e) {}
-        };
+document.getElementById('user-alias-display').innerText = userAlias;
 
-        window.playClick = function() {
-            if (isMuted) return;
-            try {
-                initAudio();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(120, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.05);
-            } catch(e){}
-        };
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+}
 
-        window.playRing = function() {
-            if (isMuted) return;
-            try {
-                initAudio();
-                const now = audioCtx.currentTime;
-                const osc1 = audioCtx.createOscillator();
-                const osc2 = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
+window.playBeep = function(freq1 = 440, freq2 = 0, duration = 0.1) {
+  if (isMuted) return;
+  try {
+    initAudio();
+    const osc1 = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(freq1, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
 
-                osc1.frequency.setValueAtTime(440, now);
-                osc2.frequency.setValueAtTime(480, now);
+    osc1.connect(gain);
+    if (freq2 > 0) {
+      const osc2 = audioCtx.createOscillator();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(freq2, audioCtx.currentTime);
+      osc2.connect(gain);
+      osc2.start();
+      osc2.stop(audioCtx.currentTime + duration);
+    }
 
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
+    gain.connect(audioCtx.destination);
+    osc1.start();
+    osc1.stop(audioCtx.currentTime + duration);
+  } catch (e) {}
+};
 
-                osc1.connect(gain);
-                osc2.connect(gain);
-                gain.connect(audioCtx.destination);
+window.playClick = function() {
+  if (isMuted) return;
+  try {
+    initAudio();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.05);
+  } catch(e){}
+};
 
-                osc1.start(now);
-                osc2.start(now);
-                osc1.stop(now + 1.2);
-                osc2.stop(now + 1.2);
-            } catch(e){}
-        };
+window.playRing = function() {
+  if (isMuted) return;
+  try {
+    initAudio();
+    const now = audioCtx.currentTime;
+    const osc1 = audioCtx.createOscillator();
+    const osc2 = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
 
-        document.getElementById('sound-toggle-btn').addEventListener('click', () => {
-            isMuted = !isMuted;
-            const icon = document.getElementById('sound-icon');
-            const btn = document.getElementById('sound-toggle-btn');
-            if (isMuted) {
-                icon.className = 'fa-solid fa-volume-xmark';
-                btn.classList.add('opacity-50');
-            } else {
-                icon.className = 'fa-solid fa-volume-high';
-                btn.classList.remove('opacity-50');
-                playBeep(800, 0, 0.1);
-            }
-        });
+    osc1.frequency.setValueAtTime(440, now);
+    osc2.frequency.setValueAtTime(480, now);
 
-        // Kagyló felvétele / lerakása (Hardveres lockolás és világítás)
-        window.toggleHook = function() {
-            playClick();
-            isHookOff = !isHookOff;
-            
-            const btn = document.getElementById('hook-btn');
-            const statusText = document.getElementById('booth-status-text');
-            const chatInput = document.getElementById('chat-input');
-            const sendBtn = document.getElementById('send-btn');
-            const led = document.getElementById('status-led');
-            const keyBtns = document.querySelectorAll('.key-btn');
-            const dialInput = document.getElementById('dial-input');
-            const dialBtn = document.getElementById('dial-btn');
-            const buzzerBtn = document.getElementById('buzzer-btn');
-            const liveDot = document.getElementById('live-dot');
-            const liveLabel = document.getElementById('live-status-label');
-            const secretCheck = document.getElementById('secret-msg-check');
-            const secretLabel = document.getElementById('secret-label');
+    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
 
-            if (isHookOff) {
-                // Kagyló felvétele -> Gombok világítanak és aktívak
-                btn.className = "w-full p-3 bg-cyber-green/20 border border-cyber-green text-cyber-green rounded font-bold hover:bg-cyber-green hover:text-black transition flex flex-col items-center justify-center gap-1 shadow";
-                document.getElementById('hook-text').innerText = "KAGYLÓ LERAKÁSA";
-                statusText.innerText = "ÁLLAPOT: VONALBAN (ÉLŐ)";
-                statusText.className = "text-xs text-cyber-green mt-1 font-bold animate-pulse";
-                
-                chatInput.disabled = false;
-                sendBtn.disabled = false;
-                chatInput.placeholder = "Írj üzenetet a fülkébe...";
-                led.className = "w-3 h-3 rounded-full bg-cyber-green animate-ping";
-                
-                // Számbillentyűzet világítás aktiválása
-                keyBtns.forEach(b => b.classList.remove('inactive'));
-                dialInput.disabled = false;
-                dialInput.classList.remove('opacity-50');
-                dialInput.placeholder = "Kód (pl: X-9021)";
-                
-                dialBtn.disabled = false;
-                dialBtn.className = "bg-cyber-cyan/20 border border-cyber-cyan text-cyber-cyan px-4 py-1 rounded hover:bg-cyber-cyan hover:text-black font-bold text-xs uppercase transition";
+    osc1.connect(gain);
+    osc2.connect(gain);
+    gain.connect(audioCtx.destination);
 
-                buzzerBtn.disabled = false;
-                buzzerBtn.className = "text-xs bg-cyber-amber/20 border border-cyber-amber text-cyber-amber px-2 py-1 rounded hover:bg-cyber-amber hover:text-black transition";
+    osc1.start(now);
+    osc2.start(now);
+    osc1.stop(now + 1.2);
+    osc2.stop(now + 1.2);
+  } catch(e){}
+};
 
-                secretCheck.disabled = false;
-                secretLabel.className = "text-cyber-red";
+document.getElementById('sound-toggle-btn').addEventListener('click', () => {
+  isMuted = !isMuted;
+  const icon = document.getElementById('sound-icon');
+  const btn = document.getElementById('sound-toggle-btn');
+  const textSpan = document.getElementById('sound-text');
 
-                liveDot.style.display = 'inline-block';
-                liveLabel.innerText = `ÉLŐ VONAL // CSATORNA: #${currentBooth}`;
+  if (isMuted) {
+    icon.className = 'fa-solid fa-volume-xmark';
+    btn.classList.add('opacity-50');
+    if (textSpan) textSpan.textContent = 'AUDIO: OFF';
+  } else {
+    icon.className = 'fa-solid fa-volume-high';
+    btn.classList.remove('opacity-50');
+    if (textSpan) textSpan.textContent = 'AUDIO: ON';
+    playBeep(800, 0, 0.1);
+  }
+});
 
-                callSeconds = 0;
-                callTimerInterval = setInterval(() => {
-                    callSeconds++;
-                    const m = String(Math.floor(callSeconds / 60)).padStart(2, '0');
-                    const s = String(callSeconds % 60).padStart(2, '0');
-                    document.getElementById('call-timer').innerText = `${m}:${s}`;
-                }, 1000);
+window.toggleHook = function() {
+  playClick();
+  isHookOff = !isHookOff;
 
-                playBeep(350, 440, 0.2);
+  const btn = document.getElementById('hook-btn');
+  const statusText = document.getElementById('booth-status-text');
+  const chatInput = document.getElementById('chat-input');
+  const sendBtn = document.getElementById('send-btn');
+  const led = document.getElementById('status-led');
+  const keyBtns = document.querySelectorAll('.key-btn');
+  const dialInput = document.getElementById('dial-input');
+  const dialBtn = document.getElementById('dial-btn');
+  const buzzerBtn = document.getElementById('buzzer-btn');
+  const liveDot = document.getElementById('live-dot');
+  const liveLabel = document.getElementById('live-status-label');
+  const secretCheck = document.getElementById('secret-msg-check');
+  const secretLabel = document.getElementById('secret-label');
 
-                // Üdvözlet a vonalban
-                appendSystemMessage(`Vonal megnyitva a #${currentBooth} fülkében. Csak a jelen lévők látják az üzeneteket.`);
+  if (isHookOff) {
+    // OFF-HOOK – line is live
+    btn.className = "w-full p-3 bg-cyber-green/20 border border-cyber-green text-cyber-green rounded font-bold hover:bg-cyber-green hover:text-black transition flex flex-col items-center justify-center gap-1 shadow";
+    document.getElementById('hook-text').innerText = "HANG UP RECEIVER";
+    statusText.innerText = "STATUS: OFF-HOOK (LIVE)";
+    statusText.className = "text-xs text-cyber-green mt-1 font-bold animate-pulse";
+    chatInput.disabled = false;
+    sendBtn.disabled = false;
+    chatInput.placeholder = "Type anonymous message...";
+    led.className = "w-3 h-3 rounded-full bg-cyber-green animate-ping";
+    keyBtns.forEach(b => b.classList.remove('inactive'));
+    dialInput.disabled = false;
+    dialInput.classList.remove('opacity-50');
+    dialInput.placeholder = "Code (e.g. X-9021)";
+    dialBtn.disabled = false;
+    dialBtn.className = "bg-cyber-cyan/20 border border-cyber-cyan text-cyber-cyan px-4 py-1 rounded hover:bg-cyber-cyan hover:text-black font-bold text-xs uppercase transition";
 
-            } else {
-                // Kagyló lerakása -> Gombok sötétülnek, inaktívak
-                btn.className = "w-full p-3 bg-red-950/60 border border-cyber-red text-cyber-red rounded font-bold hover:bg-cyber-red hover:text-black transition flex flex-col items-center justify-center gap-1 shadow";
-                document.getElementById('hook-text').innerText = "KAGYLÓ FELVÉTELE";
-                statusText.innerText = "ÁLLAPOT: KAGYLÓ LERAKVA";
-                statusText.className = "text-xs text-cyber-amber mt-1";
-                
-                chatInput.disabled = true;
-                sendBtn.disabled = true;
-                chatInput.placeholder = "Előbb vedd fel a kagylót...";
-                led.className = "w-3 h-3 rounded-full bg-red-600 animate-pulse";
-                
-                // Számbillentyűzet sötétítése / inaktívvá tétele
-                keyBtns.forEach(b => b.classList.add('inactive'));
-                dialInput.disabled = true;
-                dialInput.classList.add('opacity-50');
-                dialInput.placeholder = "Vedd fel a kagylót...";
-                
-                dialBtn.disabled = true;
-                dialBtn.className = "bg-gray-800 border border-gray-700 text-gray-500 px-4 py-1 rounded font-bold text-xs uppercase cursor-not-allowed transition";
+    buzzerBtn.disabled = false;
+    buzzerBtn.className = "text-xs bg-cyber-amber/20 border border-cyber-amber text-cyber-amber px-2 py-1 rounded hover:bg-cyber-amber hover:text-black transition";
 
-                buzzerBtn.disabled = true;
-                buzzerBtn.className = "text-xs bg-gray-800 border border-gray-700 text-gray-500 px-2 py-1 rounded cursor-not-allowed transition";
+    secretCheck.disabled = false;
+    secretLabel.className = "text-cyber-red";
 
-                secretCheck.disabled = true;
-                secretLabel.className = "text-gray-600";
+    liveDot.style.display = 'inline-block';
+    liveLabel.innerText = `LIVE LINE // CHANNEL: #${currentBooth}`;
 
-                liveDot.style.display = 'none';
-                liveLabel.innerText = "VONAL BONTVA // ZERO-LOGS";
+    callSeconds = 0;
+    callTimerInterval = setInterval(() => {
+      callSeconds++;
+      const m = String(Math.floor(callSeconds / 60)).padStart(2, '0');
+      const s = String(callSeconds % 60).padStart(2, '0');
+      document.getElementById('call-timer').innerText = `${m}:${s}`;
+    }, 1000);
 
-                clearInterval(callTimerInterval);
-                document.getElementById('call-timer').innerText = "00:00";
+    playBeep(350, 440, 0.2);
+    appendSystemMessage(`Line opened on booth #${currentBooth}. Fully anonymous. Nothing is stored.`);
+  } else {
+    // ON-HOOK – line closed
+    btn.className = "w-full p-3 bg-red-950/60 border border-cyber-red text-cyber-red rounded font-bold hover:bg-red-900 hover:text-white transition flex flex-col items-center justify-center gap-1 shadow";
+    document.getElementById('hook-text').innerText = "PICK UP RECEIVER";
+    statusText.innerText = "STATUS: ON-HOOK";
+    statusText.className = "text-xs text-cyber-amber mt-1";
+    chatInput.disabled = true;
+    sendBtn.disabled = true;
+    chatInput.placeholder = "Pick up receiver first...";
+    chatInput.value = '';
+    led.className = "w-3 h-3 rounded-full bg-red-600 animate-pulse";
+    keyBtns.forEach(b => b.classList.add('inactive'));
+    dialInput.disabled = true;
+    dialInput.classList.add('opacity-50');
+    dialInput.placeholder = "Pick up receiver...";
+    dialInput.value = '';
+    dialBtn.disabled = true;
+    dialBtn.className = "bg-gray-800 border border-gray-700 text-gray-500 px-4 py-1 rounded font-bold text-xs uppercase cursor-not-allowed transition";
 
-                appendSystemMessage("A kagylót leraktad. A vonal bezárult.");
-            }
-        };
+    buzzerBtn.disabled = true;
+    buzzerBtn.className = "text-xs bg-gray-800 border border-gray-700 text-gray-500 px-2 py-1 rounded cursor-not-allowed transition";
 
-        // Számgombok nyomása (Csak akkor működik, ha a kagyló fel van véve)
-        window.pressKey = function(key) {
-            if (!isHookOff) return; // Kagyló nélkül letiltva
+    secretCheck.disabled = true;
+    secretCheck.checked = false;
+    secretLabel.className = "text-gray-600";
 
-            const dtmfFreqs = {
-                '1': [697, 1209], '2': [697, 1336], '3': [697, 1477],
-                '4': [770, 1209], '5': [770, 1336], '6': [770, 1477],
-                '7': [852, 1209], '8': [852, 1336], '9': [852, 1477],
-                '*': [941, 1209], '0': [941, 1336], '#': [941, 1477]
-            };
+    liveDot.style.display = 'none';
+    liveLabel.innerText = "LINE DISCONNECTED // ZERO-LOGS";
 
-            if (dtmfFreqs[key]) {
-                playBeep(dtmfFreqs[key][0], dtmfFreqs[key][1], 0.12);
-            }
+    clearInterval(callTimerInterval);
+    document.getElementById('call-timer').innerText = "00:00";
 
-            const input = document.getElementById('dial-input');
-            if (input.value.length < 12) {
-                input.value += key;
-            }
-        };
+    appendSystemMessage("Receiver placed on-hook. Line closed. No traces left.");
+  }
+};
 
-        window.dialBooth = function() {
-            if (!isHookOff) return;
+window.pressKey = function(key) {
+  if (!isHookOff) return;
 
-            const input = document.getElementById('dial-input');
-            let code = input.value.trim().toUpperCase();
-            if (!code) return;
-            
-            playBeep(600, 900, 0.2);
-            currentBooth = code;
-            document.getElementById('current-booth-code').innerText = currentBooth;
-            document.getElementById('live-status-label').innerText = `ÉLŐ VONAL // CSATORNA: #${currentBooth}`;
-            input.value = '';
+  const dtmfFreqs = {
+    '1': [697, 1209], '2': [697, 1336], '3': [697, 1477],
+    '4': [770, 1209], '5': [770, 1336], '6': [770, 1477],
+    '7': [852, 1209], '8': [852, 1336], '9': [852, 1477],
+    '*': [941, 1209], '0': [941, 1336], '#': [941, 1477]
+  };
 
-            const container = document.getElementById('message-container');
-            container.innerHTML = '';
-            appendSystemMessage(`Átkapcsolva a #${currentBooth} fülkébe. Itt csak az élő partnerek hallanak.`);
-        };
+  if (dtmfFreqs[key]) {
+    playBeep(dtmfFreqs[key][0], dtmfFreqs[key][1], 0.12);
+  }
 
-        window.changeAlias = function() {
-            const newAlias = prompt("Add meg az új beceneved:", userAlias);
-            if (newAlias && newAlias.trim().length > 0) {
-                userAlias = newAlias.trim().substring(0, 15);
-                document.getElementById('user-alias-display').innerText = userAlias;
-                playBeep(800, 0, 0.1);
-            }
-        };
+  const input = document.getElementById('dial-input');
+  if (input.value.length < 12) {
+    input.value += key;
+  }
+};
 
-        window.sendMessage = function() {
-            if (!isHookOff) return;
-            
-            const input = document.getElementById('chat-input');
-            const text = input.value.trim();
-            const isSecret = document.getElementById('secret-msg-check').checked;
+window.dialBooth = function() {
+  if (!isHookOff) return;
 
-            if (!text) return;
+  const input = document.getElementById('dial-input');
+  let code = input.value.trim().toUpperCase();
+  if (!code) return;
 
-            input.value = '';
-            document.getElementById('secret-msg-check').checked = false;
-            playBeep(900, 1200, 0.08);
+  playBeep(600, 900, 0.2);
+  currentBooth = code;
+  document.getElementById('current-booth-code').innerText = currentBooth;
+  document.getElementById('live-status-label').innerText = `LIVE LINE // CHANNEL: #${currentBooth}`;
+  input.value = '';
 
-            const msgData = {
-                booth: currentBooth,
-                sender: userAlias,
-                text: text,
-                isSecret: isSecret,
-                type: 'chat',
-                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-            };
+  const container = document.getElementById('message-container');
+  container.innerHTML = '';
+  appendSystemMessage(`Switched to booth #${currentBooth}. Anonymous connection established. Nothing is logged.`);
+};
 
-            // Saját képernyőre kiírás + Küldés a vonalban lévő többi aktív fülkének
-            appendMessageToUI(msgData);
-            channelSync.postMessage(msgData);
-        };
+window.changeAlias = function() {
+  const newAlias = prompt("Enter a new anonymous alias (max 15 chars):", userAlias);
+  if (newAlias && newAlias.trim().length > 0) {
+    userAlias = newAlias.trim().substring(0, 15);
+    document.getElementById('user-alias-display').innerText = userAlias;
+    playBeep(800, 0, 0.1);
+  }
+};
 
-        window.triggerBuzzer = function() {
-            if (!isHookOff) return;
+window.sendMessage = function() {
+  if (!isHookOff) return;
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  const isSecret = document.getElementById('secret-msg-check').checked;
 
-            const msgData = {
-                booth: currentBooth,
-                sender: userAlias,
-                type: 'buzzer'
-            };
+  if (!text) return;
 
-            appendMessageToUI(msgData);
-            channelSync.postMessage(msgData);
-        };
+  input.value = '';
+  document.getElementById('secret-msg-check').checked = false;
+  playBeep(900, 1200, 0.08);
 
-        // Valós idejű élő üzenetek fogadása a vonal többi tagjától
-        channelSync.onmessage = (event) => {
-            const data = event.data;
-            // Csak akkor jelenik meg, ha ugyanabban a fülkében vagy ÉS fel van véve a kagylód
-            if (isHookOff && data.booth === currentBooth) {
-                appendMessageToUI(data);
-            }
-        };
+  const msgData = {
+    booth: currentBooth,
+    sender: userAlias,
+    text: text,
+    isSecret: isSecret,
+    type: 'chat',
+    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+  };
 
-        function appendMessageToUI(msg) {
-            const container = document.getElementById('message-container');
-            const div = document.createElement('div');
-            
-            if (msg.type === 'buzzer') {
-                div.className = 'bg-cyber-red/10 border border-cyber-red text-cyber-red p-2 rounded text-center font-bold animate-pulse';
-                div.innerHTML = `<i class="fa-solid fa-bell"></i> ${msg.sender} MEGCSÖRGETTE A FÜLKÉT!`;
-                playRing();
-            } else if (msg.isSecret) {
-                div.className = 'bg-cyber-red/20 border-l-4 border-cyber-red p-2 rounded my-1 text-cyber-red';
-                const msgId = 'secret-' + Math.random().toString(36).substr(2, 9);
-                div.innerHTML = `
-                    <div class="flex justify-between text-xs">
-                        <span><i class="fa-solid fa-user-secret mr-1"></i> ${msg.sender} [TITKOS]</span>
-                        <span id="timer-${msgId}" class="font-bold">10s</span>
-                    </div>
-                    <div class="mt-1 font-mono">${escapeHtml(msg.text)}</div>
-                `;
-                
-                let left = 10;
-                const interval = setInterval(() => {
-                    left--;
-                    const el = document.getElementById(`timer-${msgId}`);
-                    if (el) el.innerText = left + 's';
-                    if (left <= 0) {
-                        clearInterval(interval);
-                        div.remove();
-                    }
-                }, 1000);
+  appendMessageToUI(msgData);
+  channelSync.postMessage(msgData);
+};
 
-            } else {
-                const isMe = msg.sender === userAlias;
-                div.className = `p-1.5 rounded flex flex-col ${isMe ? 'text-cyber-cyan border-l-2 border-cyber-cyan bg-cyber-cyan/5' : 'text-gray-300 border-l-2 border-gray-600'}`;
-                
-                div.innerHTML = `
-                    <div class="flex justify-between items-center text-xs opacity-75">
-                        <span class="font-bold ${isMe ? 'text-cyber-cyan' : 'text-cyber-amber'}">${msg.sender}</span>
-                        <span class="text-[11px] text-gray-500">${msg.time}</span>
-                    </div>
-                    <div class="break-words mt-0.5">${escapeHtml(msg.text)}</div>
-                `;
-            }
+window.triggerBuzzer = function() {
+  if (!isHookOff) return;
 
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-        }
+  const msgData = {
+    booth: currentBooth,
+    sender: userAlias,
+    type: 'buzzer'
+  };
 
-        function appendSystemMessage(text) {
-            const container = document.getElementById('message-container');
-            const div = document.createElement('div');
-            div.className = 'text-cyber-amber border-l-2 border-cyber-amber pl-2 py-1 bg-cyber-amber/5 text-sm';
-            div.innerText = `[RENDSZER]: ${text}`;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-        }
+  appendMessageToUI(msgData);
+  channelSync.postMessage(msgData);
+};
 
-        function escapeHtml(text) {
-            if (!text) return '';
-            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
+channelSync.onmessage = (event) => {
+  const data = event.data;
+  if (isHookOff && data.booth === currentBooth) {
+    appendMessageToUI(data);
+  }
+};
 
-        document.getElementById('chat-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-    </script>
+function appendMessageToUI(msg) {
+  const container = document.getElementById('message-container');
+  const div = document.createElement('div');
+
+  if (msg.type === 'buzzer') {
+    div.className = 'bg-cyber-red/10 border border-cyber-red text-cyber-red p-2 rounded text-center font-bold animate-pulse';
+    div.innerHTML = `<i class="fa-solid fa-bell"></i> ${escapeHtml(msg.sender)} BUZZED THE BOOTH!`;
+    playRing();
+  } else if (msg.isSecret) {
+    div.className = 'bg-cyber-red/20 border-l-4 border-cyber-red p-2 rounded my-1 text-cyber-red';
+    const msgId = 'secret-' + Math.random().toString(36).substr(2, 9);
+    div.innerHTML = `
+      <div class="flex justify-between text-xs">
+        <span><i class="fa-solid fa-user-secret mr-1"></i> ${escapeHtml(msg.sender)} [SECRET]</span>
+        <span id="timer-${msgId}" class="font-bold">10s</span>
+      </div>
+      <div class="mt-1 font-mono">${escapeHtml(msg.text)}</div>
+    `;
+    let left = 10;
+    const interval = setInterval(() => {
+      left--;
+      const el = document.getElementById(`timer-${msgId}`);
+      if (el) el.innerText = left + 's';
+      if (left <= 0) {
+        clearInterval(interval);
+        div.remove();
+      }
+    }, 1000);
+  } else {
+    const isMe = msg.sender === userAlias;
+    div.className = `p-1.5 rounded flex flex-col ${isMe ? 'text-cyber-cyan border-l-2 border-cyber-cyan bg-cyber-cyan/5' : 'text-gray-300 border-l-2 border-gray-600'}`;
+    div.innerHTML = `
+      <div class="flex justify-between items-center text-xs opacity-75">
+        <span class="font-bold ${isMe ? 'text-cyber-cyan' : 'text-cyber-amber'}">${escapeHtml(msg.sender)}</span>
+        <span class="text-[11px] text-gray-500">${msg.time}</span>
+      </div>
+      <div class="break-words mt-0.5">${escapeHtml(msg.text)}</div>
+    `;
+  }
+
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function appendSystemMessage(text) {
+  const container = document.getElementById('message-container');
+  const div = document.createElement('div');
+  div.className = 'text-cyber-amber border-l-2 border-cyber-amber pl-2 py-1 bg-cyber-amber/5 text-sm';
+  div.innerText = `[SYSTEM]: ${text}`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+document.getElementById('chat-input').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    sendMessage();
+  }
+});
+</script>
 </body>
 </html>
