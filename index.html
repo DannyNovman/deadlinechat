@@ -45,16 +45,16 @@ tailwind.config = {
 </script>
 
 <style>
+html {
+  scroll-behavior: smooth;
+}
 html, body {
-  height: 100%;
   overscroll-behavior: none;
   touch-action: manipulation;
   -webkit-text-size-adjust: 100%;
 }
-
 body {
   overflow-x: hidden;
-  overflow-y: auto;
 }
 
 .crt::before {
@@ -96,17 +96,12 @@ body {
   transform: scale(0.92);
   box-shadow: 0 0 8px currentColor;
 }
-
-/* Prevent pinch-zoom but allow scroll */
-* {
-  -webkit-user-drag: none;
-}
 </style>
 </head>
-<body class="bg-cyber-bg text-gray-200 font-mono min-h-full flex flex-col select-none">
+<body class="bg-cyber-bg text-gray-200 font-mono min-h-screen flex flex-col select-none">
 
-<!-- Header -->
-<header class="border-b border-cyber-cyan/30 bg-cyber-panel/80 p-3 px-4 flex justify-between items-center backdrop-blur z-30 sticky top-0">
+<!-- Header - sticky at top -->
+<header class="sticky top-0 z-50 border-b border-cyber-cyan/30 bg-cyber-panel/95 backdrop-blur-md p-3 px-4 flex justify-between items-center">
   <div class="flex items-center gap-3">
     <div class="w-3 h-3 rounded-full bg-cyber-red animate-pulse" id="status-led"></div>
     <h1 class="font-display text-cyber-cyan text-base sm:text-lg md:text-xl tracking-wider uppercase font-bold text-glow-cyan">
@@ -122,11 +117,11 @@ body {
 </header>
 
 <!-- Main Content -->
-<main class="flex-1 flex flex-col p-2 sm:p-3 md:p-4 max-w-6xl mx-auto w-full">
-  <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4">
+<main class="flex-1 p-3 sm:p-4 max-w-6xl mx-auto w-full">
+  <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-4 lg:items-stretch">
 
     <!-- LEFT: Hardware Panel -->
-    <div class="lg:col-span-4 bg-cyber-panel border-2 border-cyber-cyan/40 rounded-xl p-3 sm:p-4 shadow-2xl relative flex flex-col gap-3 glow-cyan">
+    <div class="lg:col-span-4 bg-cyber-panel border-2 border-cyber-cyan/40 rounded-xl p-4 shadow-2xl relative flex flex-col gap-3 glow-cyan">
       <div class="text-center border-b border-cyber-cyan/20 pb-2">
         <div class="text-xs text-cyber-cyan/60 tracking-widest uppercase">TERMINAL #8841</div>
         <div class="text-lg sm:text-xl font-display text-cyber-cyan font-bold">PASSROOM</div>
@@ -158,7 +153,7 @@ body {
       </div>
 
       <!-- Keypad -->
-      <div class="bg-cyber-glass border border-gray-800 p-3 rounded-lg">
+      <div class="bg-cyber-glass border border-gray-800 p-3 rounded-lg flex-1">
         <div class="text-xs text-gray-400 mb-2 text-center uppercase tracking-wider">Room Code Dialpad</div>
         <div class="grid grid-cols-3 gap-2">
           <button onclick="pressKey('1')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2.5 rounded font-crt text-xl">1</button>
@@ -184,8 +179,8 @@ body {
       </div>
     </div>
 
-    <!-- RIGHT: Chat Terminal -->
-    <div class="lg:col-span-8 bg-cyber-panel border-2 border-cyber-cyan/40 rounded-xl p-3 sm:p-4 shadow-2xl flex flex-col relative glow-cyan crt min-h-[60vh] lg:min-h-[640px]">
+    <!-- RIGHT: Chat Terminal - same height as left on desktop -->
+    <div class="lg:col-span-8 bg-cyber-panel border-2 border-cyber-cyan/40 rounded-xl p-4 shadow-2xl flex flex-col relative glow-cyan crt h-full min-h-[540px]">
       <!-- Terminal Header -->
       <div class="flex justify-between items-center border-b border-cyber-cyan/20 pb-2 mb-2 shrink-0">
         <div class="flex items-center gap-2">
@@ -197,8 +192,8 @@ body {
         </button>
       </div>
 
-      <!-- Messages - this is the main scrollable area -->
-      <div id="message-container" class="flex-1 overflow-y-auto space-y-3 p-2 bg-cyber-bg/90 rounded border border-cyber-cyan/20 font-crt text-base sm:text-lg" style="min-height: 200px;">
+      <!-- Messages -->
+      <div id="message-container" class="flex-1 overflow-y-auto space-y-3 p-2 bg-cyber-bg/90 rounded border border-cyber-cyan/20 font-crt text-base sm:text-lg">
         <div class="text-cyber-amber border-l-2 border-cyber-amber pl-2 py-1 bg-cyber-amber/5">
           [SYSTEM]: Receiver is on-hook. No data storage. No history. Pick up the receiver and dial a room code to join a live anonymous channel.
         </div>
@@ -228,7 +223,7 @@ body {
 </main>
 
 <!-- Footer -->
-<footer class="text-center text-xs text-gray-600 p-3 border-t border-gray-900 bg-cyber-bg mt-auto">
+<footer class="text-center text-xs text-gray-600 p-3 border-t border-gray-900 bg-cyber-bg mt-6">
   <p>PASSROOM &copy; | Fully Anonymous • Zero-Logs Live Protocol</p>
 </footer>
 
@@ -248,7 +243,7 @@ let callSeconds = 0;
 
 document.getElementById('user-alias-display').innerText = userAlias;
 
-// Audio
+// Audio functions
 function initAudio() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -600,7 +595,6 @@ document.getElementById('chat-input').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') sendMessage();
 });
 
-// Prevent pinch-zoom on iOS
 document.addEventListener('gesturestart', function (e) {
   e.preventDefault();
 });
