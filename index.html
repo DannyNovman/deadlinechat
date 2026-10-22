@@ -111,25 +111,26 @@ body {
   </div>
 </header>
 
-<main class="flex-1 p-3 sm:p-4 max-w-6xl mx-auto w-full">
-  <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-4">
+<main class="flex-1 p-3 sm:p-4 max-w-7xl mx-auto w-full">
+  <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-4 lg:items-stretch">
 
-    <!-- LEFT PANEL - same height as right on desktop -->
-    <div class="lg:col-span-4 bg-cyber-panel border-2 border-cyber-cyan/40 rounded-xl p-4 shadow-2xl relative flex flex-col gap-3 glow-cyan lg:h-[640px]">
+    <!-- LEFT PANEL -->
+    <div class="lg:col-span-4 bg-cyber-panel border-2 border-cyber-cyan/40 rounded-xl p-4 shadow-2xl relative flex flex-col gap-3 glow-cyan">
       <div class="text-center border-b border-cyber-cyan/20 pb-2">
         <div class="text-xs text-cyber-cyan/60 tracking-widest uppercase">TERMINAL #8841</div>
         <div class="text-lg sm:text-xl font-display text-cyber-cyan font-bold">PASSROOM</div>
         <div class="text-xs text-cyber-amber mt-1" id="booth-status-text">STATUS: ON-HOOK</div>
       </div>
 
-      <div class="bg-cyber-bg border border-cyber-green/50 rounded p-3 crt relative overflow-hidden h-28 sm:h-32 flex flex-col justify-between crt-flicker">
+      <!-- Green CRT - just tall enough for all text -->
+      <div class="bg-cyber-bg border border-cyber-green/50 rounded p-3 crt relative overflow-hidden min-h-[9.5rem] flex flex-col justify-between crt-flicker">
         <div class="flex justify-between text-xs text-cyber-green/70">
           <span>FREQ: 144.80 MHz</span>
           <span id="call-timer">00:00</span>
         </div>
-        <div class="text-center">
+        <div class="text-center py-1">
           <div class="text-xs text-cyber-green/50">ACTIVE ROOM CODE</div>
-          <div id="current-booth-code" class="text-xl sm:text-2xl font-crt text-cyber-green text-glow-cyan tracking-widest font-bold">SECURE-88</div>
+          <div id="current-booth-code" class="text-xl sm:text-2xl font-crt text-cyber-green text-glow-cyan tracking-widest font-bold leading-tight">SECURE-88</div>
         </div>
         <div class="text-xs text-cyber-green/80 flex items-center justify-center gap-1 flex-wrap">
           <span>ALIAS:</span>
@@ -145,7 +146,7 @@ body {
         </button>
       </div>
 
-      <div class="bg-cyber-glass border border-gray-800 p-3 rounded-lg flex-1">
+      <div class="bg-cyber-glass border border-gray-800 p-3 rounded-lg">
         <div class="text-xs text-gray-400 mb-2 text-center uppercase tracking-wider">Room Code Dialpad</div>
         <div class="grid grid-cols-3 gap-2">
           <button onclick="pressKey('1')" class="key-btn inactive bg-cyber-bg border border-cyber-cyan/30 text-cyber-cyan py-2.5 rounded font-crt text-xl">1</button>
@@ -165,11 +166,14 @@ body {
           <input type="text" id="dial-input" disabled placeholder="Pick up receiver..." maxlength="16" class="bg-cyber-bg border border-cyber-cyan/20 px-3 py-1.5 rounded text-cyber-cyan text-center font-crt text-lg w-full focus:outline-none uppercase opacity-50">
           <button id="dial-btn" disabled onclick="dialBooth()" class="bg-gray-800 border border-gray-700 text-gray-500 px-4 py-1.5 rounded font-bold text-xs uppercase cursor-not-allowed transition">DIAL</button>
         </div>
+        <div class="mt-2">
+          <input type="password" id="room-password" disabled placeholder="Optional room password" class="bg-cyber-bg border border-cyber-cyan/20 px-3 py-1.5 rounded text-cyber-cyan text-center font-mono text-sm w-full focus:outline-none opacity-50">
+        </div>
       </div>
     </div>
 
-    <!-- RIGHT PANEL - same height -->
-    <div class="lg:col-span-8 bg-cyber-panel border-2 border-cyber-cyan/40 rounded-xl p-4 shadow-2xl flex flex-col relative glow-cyan crt h-[75vh] sm:h-[78vh] lg:h-[640px]">
+    <!-- RIGHT PANEL - full height on mobile, matches left on desktop -->
+    <div class="lg:col-span-8 bg-cyber-panel border-2 border-cyber-cyan/40 rounded-xl p-4 shadow-2xl flex flex-col relative glow-cyan crt h-[88vh] lg:h-auto lg:min-h-[640px]">
       <div class="flex justify-between items-center border-b border-cyber-cyan/20 pb-2 mb-2 shrink-0">
         <div class="flex items-center gap-2">
           <span class="inline-block w-2.5 h-2.5 bg-cyber-green rounded-full animate-ping" id="live-dot" style="display:none;"></span>
@@ -208,7 +212,7 @@ body {
 </main>
 
 <footer class="text-center text-xs text-gray-600 p-3 border-t border-gray-900 bg-cyber-bg">
-  <p>PASSROOM &copy; | Fully Anonymous • Zero-Logs Live Protocol</p>
+  <p>PASSROOM &copy; | Fully Anonymous • Client-side Encrypted • Zero-Logs Live Protocol</p>
 </footer>
 
 <script>
@@ -222,9 +226,66 @@ let isHookOff = false;
 let userAlias = 'Caller-' + Math.floor(1000 + Math.random() * 9000);
 let callTimerInterval = null;
 let callSeconds = 0;
+let roomKey = null;
 
 document.getElementById('user-alias-display').innerText = userAlias;
 
+// ========== Encryption ==========
+async function deriveKey(roomCode, password) {
+  const enc = new TextEncoder();
+  const material = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(roomCode + "|" + (password || "")),
+    "PBKDF2",
+    false,
+    ["deriveKey"]
+  );
+  return crypto.subtle.deriveKey(
+    {
+      name: "PBKDF2",
+      salt: enc.encode("passroom-v1-salt"),
+      iterations: 100000,
+      hash: "SHA-256"
+    },
+    material,
+    { name: "AES-GCM", length: 256 },
+    false,
+    ["encrypt", "decrypt"]
+  );
+}
+
+async function encryptPayload(data) {
+  if (!roomKey) return null;
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const encoded = new TextEncoder().encode(JSON.stringify(data));
+  const ciphertext = await crypto.subtle.encrypt(
+    { name: "AES-GCM", iv },
+    roomKey,
+    encoded
+  );
+  return {
+    iv: Array.from(iv),
+    ct: Array.from(new Uint8Array(ciphertext))
+  };
+}
+
+async function decryptPayload(payload) {
+  if (!roomKey || !payload.iv || !payload.ct) return null;
+  try {
+    const iv = new Uint8Array(payload.iv);
+    const ct = new Uint8Array(payload.ct);
+    const decrypted = await crypto.subtle.decrypt(
+      { name: "AES-GCM", iv },
+      roomKey,
+      ct
+    );
+    return JSON.parse(new TextDecoder().decode(decrypted));
+  } catch (e) {
+    return null;
+  }
+}
+
+// ========== Audio ==========
 function initAudio() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -310,6 +371,7 @@ document.getElementById('sound-toggle-btn').addEventListener('click', () => {
   }
 });
 
+// ========== MQTT ==========
 function connectMQTT() {
   if (mqttClient && mqttClient.connected) return;
   mqttClient = mqtt.connect(MQTT_BROKER, {
@@ -321,10 +383,21 @@ function connectMQTT() {
   mqttClient.on('connect', () => {
     if (isHookOff && currentBooth) subscribeToBooth(currentBooth);
   });
-  mqttClient.on('message', (topic, message) => {
+  mqttClient.on('message', async (topic, message) => {
     try {
-      const data = JSON.parse(message.toString());
-      if (isHookOff && data.booth === currentBooth) {
+      const raw = JSON.parse(message.toString());
+      if (!isHookOff) return;
+
+      let data = raw;
+      if (raw.encrypted) {
+        data = await decryptPayload(raw);
+        if (!data) {
+          appendSystemMessage("Failed to decrypt message (wrong password?)");
+          return;
+        }
+      }
+
+      if (data.booth === currentBooth) {
         if (data.sender !== userAlias || data.type === 'buzzer') {
           appendMessageToUI(data);
         }
@@ -342,11 +415,14 @@ function subscribeToBooth(booth) {
   });
 }
 
-function publishMessage(msgData) {
-  if (!mqttClient || !mqttClient.connected || !currentTopic) return;
-  mqttClient.publish(currentTopic, JSON.stringify(msgData));
+async function publishMessage(msgData) {
+  if (!mqttClient || !mqttClient.connected || !currentTopic || !roomKey) return;
+  const encrypted = await encryptPayload(msgData);
+  if (!encrypted) return;
+  mqttClient.publish(currentTopic, JSON.stringify({ encrypted: true, ...encrypted }));
 }
 
+// ========== Main Logic ==========
 window.toggleHook = function() {
   playClick();
   isHookOff = !isHookOff;
@@ -363,6 +439,7 @@ window.toggleHook = function() {
   const liveLabel = document.getElementById('live-status-label');
   const secretCheck = document.getElementById('secret-msg-check');
   const secretLabel = document.getElementById('secret-label');
+  const roomPassword = document.getElementById('room-password');
 
   if (isHookOff) {
     btn.className = "w-full p-3 bg-cyber-green/20 border border-cyber-green text-cyber-green rounded font-bold hover:bg-cyber-green hover:text-black transition flex flex-col items-center justify-center gap-1 shadow";
@@ -379,6 +456,8 @@ window.toggleHook = function() {
     dialInput.placeholder = "Code (e.g. X-9021)";
     dialBtn.disabled = false;
     dialBtn.className = "bg-cyber-cyan/20 border border-cyber-cyan text-cyber-cyan px-4 py-1.5 rounded hover:bg-cyber-cyan hover:text-black font-bold text-xs uppercase transition";
+    roomPassword.disabled = false;
+    roomPassword.classList.remove('opacity-50');
     buzzerBtn.disabled = false;
     buzzerBtn.className = "text-xs bg-cyber-amber/20 border border-cyber-amber text-cyber-amber px-2 py-1 rounded hover:bg-cyber-amber hover:text-black transition";
     secretCheck.disabled = false;
@@ -394,8 +473,7 @@ window.toggleHook = function() {
     }, 1000);
     playBeep(350, 440, 0.2);
     connectMQTT();
-    subscribeToBooth(currentBooth);
-    appendSystemMessage(`Line opened on room #${currentBooth}. Fully anonymous. Anyone with the same code can join.`);
+    appendSystemMessage("Line opened. Dial a room code (and optional password) to connect.");
   } else {
     btn.className = "w-full p-3 bg-red-950/60 border border-cyber-red text-cyber-red rounded font-bold hover:bg-red-900 hover:text-white transition flex flex-col items-center justify-center gap-1 shadow";
     document.getElementById('hook-text').innerText = "PICK UP RECEIVER";
@@ -413,6 +491,9 @@ window.toggleHook = function() {
     dialInput.value = '';
     dialBtn.disabled = true;
     dialBtn.className = "bg-gray-800 border border-gray-700 text-gray-500 px-4 py-1.5 rounded font-bold text-xs uppercase cursor-not-allowed transition";
+    roomPassword.disabled = true;
+    roomPassword.classList.add('opacity-50');
+    roomPassword.value = '';
     buzzerBtn.disabled = true;
     buzzerBtn.className = "text-xs bg-gray-800 border border-gray-700 text-gray-500 px-2 py-1 rounded cursor-not-allowed transition";
     secretCheck.disabled = true;
@@ -426,6 +507,7 @@ window.toggleHook = function() {
       mqttClient.unsubscribe(currentTopic);
       currentTopic = null;
     }
+    roomKey = null;
     appendSystemMessage("Receiver placed on-hook. Line closed. No traces left.");
   }
 };
@@ -443,19 +525,25 @@ window.pressKey = function(key) {
   if (input.value.length < 16) input.value += key;
 };
 
-window.dialBooth = function() {
+window.dialBooth = async function() {
   if (!isHookOff) return;
   const input = document.getElementById('dial-input');
   let code = input.value.trim().toUpperCase();
   if (!code) return;
+
+  const password = document.getElementById('room-password').value;
+
   playBeep(600, 900, 0.2);
   currentBooth = code;
   document.getElementById('current-booth-code').innerText = currentBooth;
   document.getElementById('live-status-label').innerText = `LIVE LINE // ROOM: #${currentBooth}`;
   input.value = '';
+
+  roomKey = await deriveKey(code, password);
+
   document.getElementById('message-container').innerHTML = '';
   subscribeToBooth(currentBooth);
-  appendSystemMessage(`Switched to room #${currentBooth}. Anyone who dials the same code can join this anonymous channel.`);
+  appendSystemMessage(`Connected to room #${currentBooth}. Messages are client-side encrypted.`);
 };
 
 window.changeAlias = function() {
@@ -467,8 +555,8 @@ window.changeAlias = function() {
   }
 };
 
-window.sendMessage = function() {
-  if (!isHookOff) return;
+window.sendMessage = async function() {
+  if (!isHookOff || !roomKey) return;
   const input = document.getElementById('chat-input');
   const text = input.value.trim();
   const isSecret = document.getElementById('secret-msg-check').checked;
@@ -485,14 +573,14 @@ window.sendMessage = function() {
     time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
   };
   appendMessageToUI(msgData);
-  publishMessage(msgData);
+  await publishMessage(msgData);
 };
 
-window.triggerBuzzer = function() {
-  if (!isHookOff) return;
+window.triggerBuzzer = async function() {
+  if (!isHookOff || !roomKey) return;
   const msgData = { booth: currentBooth, sender: userAlias, type: 'buzzer' };
   appendMessageToUI(msgData);
-  publishMessage(msgData);
+  await publishMessage(msgData);
 };
 
 function appendMessageToUI(msg) {
